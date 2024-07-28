@@ -1,12 +1,7 @@
 pipeline {
     agent {
         any {
-            sh '''
-                if ! [ -x "$(command -v mvn)" ]; then
-                  echo "Maven is not installed. Installing Maven..."
-                '''
-            image 'maven:3.9.0'
-            args '-v /root/.m2:/root/.m2'
+           
         }
     }
     stages {
