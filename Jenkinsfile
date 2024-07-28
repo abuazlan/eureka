@@ -41,13 +41,27 @@ pipeline {
         }
         stage('Generate Helm Chart') {
             steps {
-                sh '''
-                echo "Generating Helm chart..."
-                if [ ! -d "mychart" ]; then
-                    helm create mychart
-                fi
-                helm package mychart
-                '''
+                script {
+                    def artifactId = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout", returnStdout: true).trim()
+                    def chartName = "${artifactId}-${BUILD_NUMBER}"
+                    sh """
+                    echo "Generating Helm chart..."
+                    helm create ${chartName}
+                    helm package ${chartName}
+                    """
+                }
+            }
+        }
+        stage('Clean Up') {
+            steps {
+                script {
+                    def artifactId = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout", returnStdout: true).trim()
+                    def chartName = "${artifactId}-${BUILD_NUMBER}"
+                    sh """
+                    echo "Cleaning up..."
+                    rm -rf ${chartName}
+                    """
+                }
             }
         }
     }
