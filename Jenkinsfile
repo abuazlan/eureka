@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-        any {
-           
-        }
-    }
+    agent any
     stages {
         stage('Install Maven') {
             steps {
@@ -43,9 +39,11 @@ pipeline {
             steps {
                 script {
                     def artifactId = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout", returnStdout: true).trim()
-                    def chartName = "${artifactId}-${BUILD_NUMBER}"
+                    def version = sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
+                    def timestamp = sh(script: "date +%m%d%Y%H%M%S", returnStdout: true).trim()
+                    def chartName = "${artifactId}-${version}-${timestamp}"
                     sh """
-                    echo "Generating Helm chart...${chartName}"
+                    echo "Generating Helm chart..."
                     helm create ${chartName}
                     helm package ${chartName}
                     """
@@ -56,7 +54,9 @@ pipeline {
             steps {
                 script {
                     def artifactId = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout", returnStdout: true).trim()
-                    def chartName = "${artifactId}-${BUILD_NUMBER}"
+                    def version = sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
+                    def timestamp = sh(script: "date +%m%d%Y%H%M%S", returnStdout: true).trim()
+                    def chartName = "${artifactId}-${version}-${timestamp}"
                     sh """
                     echo "Cleaning up..."
                     rm -rf ${chartName}
