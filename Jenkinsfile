@@ -54,7 +54,7 @@ pipeline {
             steps {
                 sh '''
                 echo "Cleaning up..."
-                rm -rf ${CHART_NAME}
+                find . -mindepth 1 -maxdepth 1 ! -name target ! -name ${CHART_NAME}.tgz -exec rm -rf {} +
                 '''
             }
         }
