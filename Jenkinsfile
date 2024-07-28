@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        docker {
+        any {
             sh '''
                 if ! [ -x "$(command -v mvn)" ]; then
                   echo "Maven is not installed. Installing Maven..."
