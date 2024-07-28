@@ -43,7 +43,7 @@ pipeline {
                     def timestamp = sh(script: "date +%m%d%Y%H%M%S", returnStdout: true).trim()
                     def chartName = "${artifactId}-${version}-${timestamp}"
                     sh """
-                    echo "Generating Helm chart..."
+                    echo "Generating Helm chart...${chartName}"
                     helm create ${chartName}
                     helm package ${chartName}
                     """
