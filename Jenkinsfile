@@ -45,7 +45,7 @@ pipeline {
                     def artifactId = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout", returnStdout: true).trim()
                     def chartName = "${artifactId}-${BUILD_NUMBER}"
                     sh """
-                    echo "Generating Helm chart..."
+                    echo "Generating Helm chart...${chartName}"
                     helm create ${chartName}
                     helm package ${chartName}
                     """
