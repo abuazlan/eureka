@@ -5,6 +5,7 @@ pipeline {
         VERSION = sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/[^a-zA-Z0-9.-]//g'", returnStdout: true).trim()
         TIMESTAMP = sh(script: "date +%m%d%Y%H%M%S", returnStdout: true).trim()
         CHART_NAME = "${ARTIFACT_ID}-${VERSION}-${TIMESTAMP}"
+        FINAL_JAR = "${ARTIFACT_ID}-${VERSION}.jar"
     }
     stages {
         stage('Install Maven') {
@@ -54,7 +55,8 @@ pipeline {
             steps {
                 sh '''
                 echo "Cleaning up..."
-                find . -mindepth 1 -maxdepth 1 ! -name target ! -name "${ARTIFACT_ID}-*.tgz" -exec rm -rf {} +
+                find . -mindepth 1 -maxdepth 1 ! -name "${ARTIFACT_ID}-*.tgz" ! -name "*.jar" -exec rm -rf {} +
+                find target -mindepth 1 ! -name "*.jar" -exec rm -rf {} +
                 '''
             }
         }
