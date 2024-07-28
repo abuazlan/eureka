@@ -1,5 +1,11 @@
 pipeline {
     agent any
+    environment {
+        ARTIFACT_ID = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout | sed 's/[^a-zA-Z0-9.-]//g'", returnStdout: true).trim()
+        VERSION = sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/[^a-zA-Z0-9.-]//g'", returnStdout: true).trim()
+        TIMESTAMP = sh(script: "date +%m%d%Y%H%M%S", returnStdout: true).trim()
+        CHART_NAME = "${ARTIFACT_ID}-${VERSION}-${TIMESTAMP}"
+    }
     stages {
         stage('Install Maven') {
             steps {
@@ -37,31 +43,19 @@ pipeline {
         }
         stage('Generate Helm Chart') {
             steps {
-                script {
-                    def artifactId = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout | sed 's/[^a-zA-Z0-9.-]//g'", returnStdout: true).trim()
-                    def version = sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/[^a-zA-Z0-9.-]//g'", returnStdout: true).trim()
-                    def timestamp = sh(script: "date +%m%d%Y%H%M%S", returnStdout: true).trim()
-                    def chartName = "${artifactId}-${version}-${timestamp}"
-                    sh """
-                    echo "Generating Helm chart..."
-                    helm create ${chartName}
-                    helm package ${chartName}
-                    """
-                }
+                sh '''
+                echo "Generating Helm chart..."
+                helm create ${CHART_NAME}
+                helm package ${CHART_NAME}
+                '''
             }
         }
         stage('Clean Up') {
             steps {
-                script {
-                    def artifactId = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout | sed 's/[^a-zA-Z0-9.-]//g'", returnStdout: true).trim()
-                    def version = sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/[^a-zA-Z0-9.-]//g'", returnStdout: true).trim()
-                    def timestamp = sh(script: "date +%m%d%Y%H%M%S", returnStdout: true).trim()
-                    def chartName = "${artifactId}-${version}-${timestamp}"
-                    sh """
-                    echo "Cleaning up..."
-                    rm -rf ${chartName}
-                    """
-                }
+                sh '''
+                echo "Cleaning up..."
+                rm -rf ${CHART_NAME}
+                '''
             }
         }
     }
