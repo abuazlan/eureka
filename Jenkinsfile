@@ -39,5 +39,16 @@ pipeline {
                 sh 'mvn -B -DskipTests clean install package'
             }
         }
+        stage('Generate Helm Chart') {
+            steps {
+                sh '''
+                echo "Generating Helm chart..."
+                if [ ! -d "mychart" ]; then
+                    helm create mychart
+                fi
+                helm package mychart
+                '''
+            }
+        }
     }
 }
