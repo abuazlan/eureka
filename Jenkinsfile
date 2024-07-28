@@ -66,4 +66,10 @@ pipeline {
                 cp target/*.jar .
 
                 echo "Cleaning up..."
-                find
+                find . -mindepth 1 -maxdepth 1 ! -name "${ARTIFACT_ID}-*.tgz" ! -name "*.jar" ! -name "${CHART_NAME}.tgz" -exec rm -rf {} +
+                rm -rf target
+                '''
+            }
+        }
+    }
+}
