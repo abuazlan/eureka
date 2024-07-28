@@ -54,11 +54,12 @@ pipeline {
         stage('Clean Up') {
             steps {
                 sh '''
+                echo "Copying final jar to root level..."
+                cp target/${FINAL_JAR} .
+
                 echo "Cleaning up..."
-                find . -mindepth 1 -maxdepth 1 ! -name "${ARTIFACT_ID}-*.tgz" ! -name "*.jar" -exec rm -rf {} +
-                if [ -d "target" ]; then
-                find target -mindepth 1 ! -name "*.jar" -exec rm -rf {} +
-                fi
+                find . -mindepth 1 -maxdepth 1 ! -name "${ARTIFACT_ID}-*.tgz" ! -name "${FINAL_JAR}" ! -name "target" -exec rm -rf {} +
+                rm -rf target
                 '''
             }
         }
