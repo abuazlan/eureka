@@ -38,12 +38,12 @@ pipeline {
         stage('Generate Helm Chart') {
             steps {
                 script {
-                    def artifactId = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout", returnStdout: true).trim()
-                    def version = sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
+                    def artifactId = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout | sed 's/[^a-zA-Z0-9.-]//g'", returnStdout: true).trim()
+                    def version = sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/[^a-zA-Z0-9.-]//g'", returnStdout: true).trim()
                     def timestamp = sh(script: "date +%m%d%Y%H%M%S", returnStdout: true).trim()
                     def chartName = "${artifactId}-${version}-${timestamp}"
                     sh """
-                    echo "Generating Helm chart...${chartName}"
+                    echo "Generating Helm chart..."
                     helm create ${chartName}
                     helm package ${chartName}
                     """
@@ -53,8 +53,8 @@ pipeline {
         stage('Clean Up') {
             steps {
                 script {
-                    def artifactId = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout", returnStdout: true).trim()
-                    def version = sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
+                    def artifactId = sh(script: "mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout | sed 's/[^a-zA-Z0-9.-]//g'", returnStdout: true).trim()
+                    def version = sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/[^a-zA-Z0-9.-]//g'", returnStdout: true).trim()
                     def timestamp = sh(script: "date +%m%d%Y%H%M%S", returnStdout: true).trim()
                     def chartName = "${artifactId}-${version}-${timestamp}"
                     sh """
