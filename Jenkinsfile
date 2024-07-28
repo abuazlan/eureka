@@ -9,11 +9,12 @@ pipeline {
             steps {
                 sh '''
                 if ! [ -x "$(command -v mvn)" ]; then
-                  echo "Maven is not installed. Installing Maven..."
-                  apt-get update
-                  apt-get install -y maven
+                  echo "Maven is not installed. Install Maven using below command..."
+                  echo "docker exec -it -u root container_name /bin/bash"
+                  echo "apt-get install maven"
+                  exit 1
                 else
-                  echo "Maven is already installed."
+                  echo "Maven is already installed. Good"
                 fi
                 '''
             }
