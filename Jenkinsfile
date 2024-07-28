@@ -7,18 +7,27 @@ pipeline {
         CHART_NAME = "${ARTIFACT_ID}-${VERSION}-${TIMESTAMP}"
     }
     stages {
-        stage('Install Maven') {
+        stage('Check Tools Availability') {
             steps {
-                sh '''
-                if ! [ -x "$(command -v mvn)" ]; then
-                  echo "Maven is not installed. Install Maven using below command..."
-                  echo "docker exec -it -u root container_name /bin/bash"
-                  echo "apt-get install maven"
-                  exit 1
-                else
-                  echo "Maven is already installed. Good"
-                fi
-                '''
+                script {
+                    def mavenAvailable = sh(script: 'command -v mvn', returnStatus: true) == 0
+                    def helmAvailable = sh(script: 'command -v helm', returnStatus: true) == 0
+                    if (!mavenAvailable || !helmAvailable) {
+                        def message = ''
+                        if (!mavenAvailable) {
+                            message += "Maven is not installed. Install Maven using below command:\n"
+                            message += "docker exec -it -u root container_name /bin/bash\n"
+                            message += "apt-get install maven\n\n"
+                        }
+                        if (!helmAvailable) {
+                            message += "Helm is not installed. Install Helm using below command:\n"
+                            message += "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash\n"
+                        }
+                        error(message)
+                    } else {
+                        echo "Both Maven and Helm are installed. Good."
+                    }
+                }
             }
         }
         stage('Build and Install') {
@@ -57,10 +66,4 @@ pipeline {
                 cp target/*.jar .
 
                 echo "Cleaning up..."
-                find . -mindepth 1 -maxdepth 1 ! -name "${ARTIFACT_ID}-*.tgz" ! -name "*.jar" ! -name "${CHART_NAME}.tgz" -exec rm -rf {} +
-                rm -rf target
-                '''
-            }
-        }
-    }
-}
+                find
