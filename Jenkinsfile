@@ -56,7 +56,9 @@ pipeline {
                 sh '''
                 echo "Cleaning up..."
                 find . -mindepth 1 -maxdepth 1 ! -name "${ARTIFACT_ID}-*.tgz" ! -name "*.jar" -exec rm -rf {} +
+                if [ -d "target" ]; then
                 find target -mindepth 1 ! -name "*.jar" -exec rm -rf {} +
+                fi
                 '''
             }
         }
