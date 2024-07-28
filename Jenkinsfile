@@ -55,7 +55,7 @@ pipeline {
             steps {
                 sh '''
                 echo "Copying final jar to root level..."
-                cp target/${FINAL_JAR} .
+                cp target/*.jar .
 
                 echo "Cleaning up..."
                 find . -mindepth 1 -maxdepth 1 ! -name "${ARTIFACT_ID}-*.tgz" ! -name "${FINAL_JAR}" ! -name "target" -exec rm -rf {} +
