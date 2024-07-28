@@ -18,9 +18,9 @@ pipeline {
                 '''
             }
         }
-        stage('Build') {
+        stage('Build and Install') {
             steps {
-                sh 'mvn -B -DskipTests clean package'
+                sh 'mvn -B -DskipTests clean install'
             }
         }
         stage('Test') {
@@ -33,9 +33,9 @@ pipeline {
                 }
             }
         }
-        stage('Deliver') {
+        stage('Build and Install') {
             steps {
-                sh './jenkins/scripts/deliver.sh'
+                sh 'mvn -B -DskipTests clean install package'
             }
         }
     }
