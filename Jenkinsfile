@@ -33,7 +33,7 @@ pipeline {
                 }
             }
         }
-        stage('Build and Install') {
+        stage('Package') {
             steps {
                 sh 'mvn -B -DskipTests clean install package'
             }
